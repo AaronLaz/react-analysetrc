@@ -12,7 +12,6 @@ class App extends React.Component {
       <div className="app">
         <Router>
             <Route exact path={['/', '/upload']}>
-            <h1 className="title"> Analysetrc </h1>
             <Route exact path="/upload" component={Upload} />
             <Route exact path="/" component={List} />
             </Route>
