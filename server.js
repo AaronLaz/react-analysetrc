@@ -31,15 +31,14 @@ app.post('/upload', function (req, res) {
 
 });
 
-
-app.get('/getfiles', () => {
+// Récupérer les noms de fichiers logs disponibles
+app.get('/getfiles', function (req, res) {
   var result =[];
   fs.readdir("./logs", (err, files) => {
     files.forEach(file => {
       result.push(file);
     });
-    console.log(result);
-    return JSON.stringify(result);
+    res.send(result);
   });
 });
 

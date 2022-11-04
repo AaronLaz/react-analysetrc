@@ -6,15 +6,25 @@ function List(){
 
     const [listFiles, setListFiles] = useState([]);
 
-    useEffect(() => {
-        axios.get('http://localhost:8000/getfiles').then(resp => {
-            console.log("test"+resp);
+    const sendGetRequest = async () => {
+        try {
+            const resp = await axios.get('http://localhost:8000/getfiles');
             setListFiles(resp.data);
-    });
+            console.log(listFiles);
+        } catch (err) {
+            // Handle Error Here
+            console.error(err);
+        }
+    };
+    
+
+    useEffect(() => {
+        sendGetRequest();
     }, []);
     return(
         <div>
             {listFiles[0]}
+            {listFiles[1]}
             <ToastContainer />
         </div>
     );
