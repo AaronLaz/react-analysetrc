@@ -42,6 +42,21 @@ app.get('/getfiles', function (req, res) {
   });
 });
 
+// Supprimer un fichier log
+app.delete('/delete/:filename', function (req, res) {
+  console.log(req.params.filename);
+  var name = req.params.filename;
+  fs.readdir("./logs", (err, files) => {
+    files.forEach(file => {
+      console.log(file + " : "+name);
+      if(file == name){
+        fs.unlink("./logs/"+name);
+      }
+    });
+    return res.status(200);
+  });
+});
+
 app.listen(8000, function () {
 
   console.log('App tourne sur le port 8000');

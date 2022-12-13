@@ -18,7 +18,7 @@ function Upload() {
     setTimeout(() => setLoading(true),1000);
 }, []);
 
-  function homepage (){
+  function homepage(){
     history.push('/');
   }
 
@@ -89,7 +89,7 @@ function Upload() {
             <div className="form-group">
               <Progress max="100" color="success" value={loaded}>{Math.round(loaded, 2)}%</Progress>
             </div>
-            <button type="button" className="btn btn-success btn-block" onClick={(event) => onClickHandler(event)}>Upload</button>
+            <button type="button" className="btn btn-success btn-block" onClick={(event) => onClickHandler()}>Upload</button>
             <ToastContainer />
           </div>
         </div>

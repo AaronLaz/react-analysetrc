@@ -5,12 +5,19 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Loading from "./Loading";
 import 'bootstrap/dist/css/bootstrap.css';
+import { useHistory } from 'react-router-dom';
 
 function List() {
 
     const [listFiles, setListFiles] = useState([]);
     const [listRapports, setListRapports] = useState([]);
+    const [loaded, setLoaded] = useState(0);
     const [loading, setLoading] = useState(false);
+    let history = useHistory();
+
+    function homepage(){
+        history.push('/');
+      }
 
     const sendGetRequest = async () => {
         try {
@@ -26,6 +33,21 @@ function List() {
         setTimeout(() => setLoading(true), 1000);
     }, []);
 
+    function onDeleteHandler(i) {
+        var filename = listFiles[i];
+        axios.delete("http://localhost:8000/delete/"+filename, {
+          onUploadProgress: ProgressEvent => {
+            setLoaded(ProgressEvent.loaded / ProgressEvent.total * 100)
+          },
+        })
+          .then(res => { // affichage résultat
+            toast.success('ficher supprimé');
+            setTimeout(() => {  homepage(); }, 4000);
+          }).catch((err) => toast.error('échec de la suppression'));
+          listFiles.splice(i,1);
+          homepage();
+      }
+
     return (
         loading ?
             <div>
@@ -36,6 +58,7 @@ function List() {
                                 <th className="thead-th">N°</th>
                                 <th className="thead-th">LOG</th>
                                 <th className="thead-th">AFFICHER</th>
+                                <th className="thead-th">SUPPRIMER</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,6 +71,7 @@ function List() {
                                         :
                                         <td className="mercurial-tbody-th">Afficher rapport</td>
                                     }
+                                    <td className="mercurial-thead-th"><Button variant="danger" onClick={(event) => onDeleteHandler(i)}>X</Button>{' '}</td>
                                 </tr>
                             ))}
                         </tbody>
