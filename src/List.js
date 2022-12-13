@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Loading from "./Loading";
 import 'bootstrap/dist/css/bootstrap.css';
 import { useHistory } from 'react-router-dom';
+import './index.css';
 
 function List() {
 
@@ -34,44 +35,61 @@ function List() {
     }, []);
 
     function onDeleteHandler(i) {
-        var filename = listFiles[i];
-        axios.delete("http://localhost:8000/delete/"+filename, {
-          onUploadProgress: ProgressEvent => {
-            setLoaded(ProgressEvent.loaded / ProgressEvent.total * 100)
-          },
-        })
-          .then(res => { // affichage résultat
-            toast.success('ficher supprimé');
-            setTimeout(() => {  homepage(); }, 4000);
+        var files = listFiles;
+        axios.delete("http://localhost:8000/delete/"+i)
+          .then(res => { // succès
           }).catch((err) => toast.error('échec de la suppression'));
-          listFiles.splice(i,1);
-          homepage();
+        toast.success('Ficher supprimé');
+        files.splice(files.indexOf(i),1);
+        setListFiles(files);
+        setTimeout(() => {  homepage(); }, 1000);
+      }
+
+      function onGenerateHandler(i) {
+        var newReports = listRapports;
+        newReports[listFiles.indexOf(i)] = 1;
+        setListRapports(newReports);
+        homepage();
+      }
+
+      function onShowHandler(i) {
+        var newReports = listRapports;
+        newReports[listFiles.indexOf(i)] = null;
+        setListRapports(newReports);
+        homepage();
       }
 
     return (
         loading ?
-            <div>
+            <div className="tableHolder">
                 {listFiles.length !== 0 ?
                     <Table striped hover responsive className="table">
                         <thead className="thead">
                             <tr>
                                 <th className="thead-th">N°</th>
                                 <th className="thead-th">LOG</th>
-                                <th className="thead-th">AFFICHER</th>
-                                <th className="thead-th">SUPPRIMER</th>
+                                <th className="thead-th">Générer Rapport</th>
+                                <th className="thead-th">Afficher Rapport</th>
+                                <th className="thead-th">Supprimer</th>
                             </tr>
                         </thead>
                         <tbody>
                             {listFiles.map((i) => (
                                 <tr key={i}>
-                                    <td className="mercurial-thead-th">{listFiles.indexOf(i) + 1}</td>
-                                    <td className="mercurial-thead-th">{i}</td>
+                                    <td className="tbody-th">{listFiles.indexOf(i) + 1}</td>
+                                    <td className="tbody-th">{i}</td>
+                                    <td className="tbody-th"><Button variant="primary" onClick={(event) => onGenerateHandler(i)}>Générer</Button>{' '}</td>
                                     {listRapports[listFiles.indexOf(i)] == null ?
-                                        <td className="mercurial-tbody-th">Génerer rapport</td>
+                                        <>
+                                            <td className="tbody-th"></td>
+                                        </>
                                         :
-                                        <td className="mercurial-tbody-th">Afficher rapport</td>
+                                        <>
+                                            <td className="tbody-th"><Button variant="info" onClick={(event) => onShowHandler(i)}>Afficher</Button>{' '}</td>
+                                        </>
+                                        
                                     }
-                                    <td className="mercurial-thead-th"><Button variant="danger" onClick={(event) => onDeleteHandler(i)}>X</Button>{' '}</td>
+                                    <td className="tbody-th"><Button variant="danger" onClick={(event) => onDeleteHandler(i)}>X</Button>{' '}</td>
                                 </tr>
                             ))}
                         </tbody>

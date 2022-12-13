@@ -50,7 +50,7 @@ app.delete('/delete/:filename', function (req, res) {
     files.forEach(file => {
       console.log(file + " : "+name);
       if(file == name){
-        fs.unlink("./logs/"+name);
+        fs.unlinkSync("./logs/"+name);
       }
     });
     return res.status(200);

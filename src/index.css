@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.thead-th, .tbody-th{
+  text-align: center;
+}
+
+.tableHolder{
+  width: 90%;
+  margin-left: 5%;
+}

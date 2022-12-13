@@ -30,7 +30,8 @@ function Upload() {
   }
 
   function onClickHandler() {
-    const data = new FormData();
+    if(selectedFile != null){
+      const data = new FormData();
     data.append('file', selectedFile);
     axios.post("http://localhost:8000/upload", data, {
       onUploadProgress: ProgressEvent => {
@@ -41,6 +42,10 @@ function Upload() {
         toast.success('succès');
         setTimeout(() => {  homepage(); }, 4000);
       }).catch((err) => toast.error('échec de l\'upload'));
+    }else{
+      toast.error("Veuillez sélectionner un fichier");
+    }
+    
   }
 
   function checkType(event) {
