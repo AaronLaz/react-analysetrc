@@ -5,22 +5,16 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Progress } from 'reactstrap';
 import Loading from './Loading';
-import { useHistory } from 'react-router-dom';
 
 function Upload() {
 
   const [selectedFile, setSelectedFile] = useState();
   const [loaded, setLoaded] = useState(0);
   const [loading, setLoading] = useState(false);
-  let history = useHistory();
 
   useEffect(() => {
     setTimeout(() => setLoading(true), 1000);
   }, []);
-
-  function homepage() {
-    history.push('/');
-  }
 
   function onChangeHandler(event) {
     if (checkType(event) && checkFileSize(event)) {
