@@ -15,10 +15,10 @@ function Upload() {
   let history = useHistory();
 
   useEffect(() => {
-    setTimeout(() => setLoading(true),1000);
-}, []);
+    setTimeout(() => setLoading(true), 1000);
+  }, []);
 
-  function homepage(){
+  function homepage() {
     history.push('/');
   }
 
@@ -30,22 +30,22 @@ function Upload() {
   }
 
   function onClickHandler() {
-    if(selectedFile != null){
+    if (selectedFile != null) {
       const data = new FormData();
-    data.append('file', selectedFile);
-    axios.post("http://localhost:8000/upload", data, {
-      onUploadProgress: ProgressEvent => {
-        setLoaded(ProgressEvent.loaded / ProgressEvent.total * 100)
-      },
-    })
-      .then(res => { // affichage résultat
-        toast.success('succès');
-        setTimeout(() => {  homepage(); }, 4000);
-      }).catch((err) => toast.error('échec de l\'upload'));
-    }else{
+      data.append('file', selectedFile);
+      axios.post("http://localhost:8000/upload", data, {
+        onUploadProgress: ProgressEvent => {
+          setLoaded(ProgressEvent.loaded / ProgressEvent.total * 100)
+        },
+      })
+        .then(res => { // affichage résultat
+          toast.success('succès');
+          setTimeout(() => { window.location.reload(false); }, 3000);
+        }).catch((err) => toast.error('échec de l\'upload'));
+    } else {
       toast.error("Veuillez sélectionner un fichier");
     }
-    
+
   }
 
   function checkType(event) {
@@ -83,7 +83,7 @@ function Upload() {
   }
 
   return (
-    loading ? 
+    loading ?
       <div className="container">
         <div className="row">
           <div className="offset-md-3 col-md-6">

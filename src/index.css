@@ -20,3 +20,7 @@ code {
   width: 90%;
   margin-left: 5%;
 }
+
+.logDisplay {
+  white-space: pre-wrap;
+}
