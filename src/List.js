@@ -38,7 +38,7 @@ function List() {
             .then(res => { // succès
             }).catch((err) => toast.error('échec de la suppression'));
         toast.success('Ficher supprimé');
-        sendGetRequest();
+        setTimeout(() => {  sendGetRequest(); }, 800);
     }
 
     function onGenerateHandler(i) {
