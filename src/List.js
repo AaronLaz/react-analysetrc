@@ -11,13 +11,8 @@ import './index.css';
 function List() {
 
     const [listFiles, setListFiles] = useState([]);
-    const [listRapports, setListRapports] = useState([]);
     const [loading, setLoading] = useState(false);
     let history = useHistory();
-
-    function homepage() {
-        history.push('/');
-    }
 
     const sendGetRequest = async () => {
         try {
@@ -38,21 +33,11 @@ function List() {
             .then(res => { // succès
             }).catch((err) => toast.error('échec de la suppression'));
         toast.success('Ficher supprimé');
-        setTimeout(() => {  sendGetRequest(); }, 800);
+        setTimeout(() => { sendGetRequest(); }, 800);
     }
 
-    function onGenerateHandler(i) {
-        var newReports = listRapports;
-        newReports[listFiles.indexOf(i)] = 1;
-        setListRapports(newReports);
-        homepage();
-    }
-
-    function onShowHandler(i) {
-        var newReports = listRapports;
-        newReports[listFiles.indexOf(i)] = null;
-        setListRapports(newReports);
-        homepage();
+    function onShowReport(i) {
+        history.push(`/report/${i}`);
     }
 
     function onDisplayHandler(i) {
@@ -68,7 +53,6 @@ function List() {
                             <tr>
                                 <th className="thead-th">N°</th>
                                 <th className="thead-th">LOG</th>
-                                <th className="thead-th">Générer Rapport</th>
                                 <th className="thead-th">Afficher Rapport</th>
                                 <th className="thead-th">Supprimer</th>
                             </tr>
@@ -78,17 +62,7 @@ function List() {
                                 <tr key={i}>
                                     <td className="tbody-th">{listFiles.indexOf(i) + 1}</td>
                                     <td className="tbody-th"><Button variant="link" onClick={(event) => onDisplayHandler(i)}>{i}</Button>{' '}</td>
-                                    <td className="tbody-th"><Button variant="primary" onClick={(event) => onGenerateHandler(i)}>Générer</Button>{' '}</td>
-                                    {listRapports[listFiles.indexOf(i)] == null ?
-                                        <>
-                                            <td className="tbody-th"></td>
-                                        </>
-                                        :
-                                        <>
-                                            <td className="tbody-th"><Button variant="info" onClick={(event) => onShowHandler(i)}>Afficher</Button>{' '}</td>
-                                        </>
-
-                                    }
+                                    <td className="tbody-th"><Button variant="primary" onClick={(event) => onShowReport(i)}>Accéder</Button>{' '}</td>
                                     <td className="tbody-th"><Button variant="danger" onClick={(event) => onDeleteHandler(i)}>X</Button>{' '}</td>
                                 </tr>
                             ))}
