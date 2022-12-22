@@ -21,7 +21,7 @@ function Report() {
     const [queryTime, setQueryTime] = useState([]);
     const [dates, setDates] = useState([]);
     const [tempsTotal, setTempsTotal] = useState();
-    const [analyse,setAnalyse] = useState([]);
+    const [analyse, setAnalyse] = useState([]);
 
     useEffect(() => {
         const sendGetRequest = async () => {
@@ -91,11 +91,10 @@ function Report() {
                     tempCalculs[query][3] += tempTemporelle[l];
                     // moyen
                 }
-                // TODO
                 tempCalculs.forEach((query => {
                     query[2] = tempTemporelle[query][3] / tempOccurences[query];
                 }))
-                
+
 
                 tempUniques.sort((a, b) => {
                     let numParamsA = 0;
@@ -124,19 +123,20 @@ function Report() {
                 const sortedQueries = Object.entries(tempOccurences).sort((a, b) => b[1] - a[1]);
                 const mostFrequentQuery = sortedQueries[0][0];
                 const mostFrequentQueryCount = sortedQueries[0][1];
+
+
                 setMaxOccurence(mostFrequentQueryCount);
-                setRequeteMax(mostFrequentQuery);
+                setRequeteMax(mostFrequentQuery.trimStart());
                 setPlus1(temp1);
                 setPlus2(temp2);
                 setRequetes(tempRequetes);
                 setUniques(tempUniques);
                 setOccurences(tempOccurences);
                 setQueryTime(maxTime);
-                setRequeteLongue(tempRequetes[maxI]);
+                setRequeteLongue(tempRequetes[maxI].trimStart());
                 setDates(tempDates);
                 setTempsTotal(timeConverter(difference(tempDates[0], tempDates[tempDates.length - 1])));
                 setAnalyse(tempCalculs);
-                console.log(tempCalculs);
             } catch (err) {
                 toast.error(err);
             }
@@ -230,14 +230,14 @@ function Report() {
     return (
         loading ?
             <div className="logDisplay">
-                <label>Analyse {filename.file}</label><br></br>
+                <label><b>Analyse <i>{filename.file}</i></b></label><br></br>
                 <label>Nombre de requêtes détéctées: {requetes.length}</label><br></br>
                 <label>Nombre de requêtes uniques: {uniques.length}</label><br></br>
-                <label>Requête la plus répétée: {requeteMax}</label><br></br>
+                <label>Requête la plus répétée: <div className="requetes">{requeteMax}</div></label><br></br>
                 <label>Nombre répétitions: {maxOccurence}</label><br></br>
                 <label>Nombre de requêtes {'>'}1s: {plus1}</label><br></br>
                 <label>Nombre de requêtes {'>'}2s: {plus2}</label><br></br>
-                <label>Requête qui a pris le plus de temps:{requeteLongue}</label><br></br>
+                <label>Requête qui a pris le plus de temps:<div className="requetes">{requeteLongue}</div></label><br></br>
                 <label>Temps pris: {queryTime} secondes</label><br></br>
                 <label>{tempsTotal} entre l'exécution de la 1ère et la {requetes.length}ème requête</label><br></br>
             </div>

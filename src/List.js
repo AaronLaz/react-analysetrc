@@ -48,7 +48,7 @@ function List() {
         loading ?
             <div className="tableHolder">
                 {listFiles.length !== 0 ?
-                    <Table striped hover responsive className="table">
+                    <Table hover responsive className="table">
                         <thead className="thead">
                             <tr>
                                 <th className="thead-th">N°</th>

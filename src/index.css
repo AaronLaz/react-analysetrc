@@ -7,6 +7,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body {
+  background-color: #e6e6e6; /* Set the background color to light gray */
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -19,8 +24,52 @@ code {
 .tableHolder{
   width: 90%;
   margin-left: 5%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e6e6e6;
 }
 
 .logDisplay {
   white-space: pre-wrap;
+  width: 21cm;
+  height: 29.7cm;
+  margin: 1cm;
+
+  /* Set the aspect ratio and make the component responsive */
+  aspect-ratio: 1/1.41;
+  max-width: 100%;
+  max-height: 100%;
+
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding:20px;
+  background-color: whitesmoke;
+}
+
+.requetes{
+  box-sizing: border-box; /* Include the border in the dimensions of the element */
+  border: 1px solid lightcoral;
+  border-radius: 8px;
+  width: 100%;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .logDisplay {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    font-size: 14px;
+    word-break: break-word;
+  }
+
+  .requetes {
+    border-width: 2px; /* Increase the border width on larger devices */
+  }
 }
