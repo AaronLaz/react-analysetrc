@@ -69,7 +69,7 @@ function List() {
                         </tbody>
                     </Table>
                     :
-                    <p>Il n'y a aucun fichier log, veuillez <Button variant="info" href='/upload'>déposer</Button>{' '}</p>
+                    <div className="empty">Il n'y a aucun fichier log, veuillez <Button variant="info" href='/upload'>déposer</Button>{' '}</div>
                 }
 
                 <ToastContainer />

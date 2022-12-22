@@ -1,10 +1,13 @@
 import './index.css';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import Loading from './Loading';
+import { useReactToPrint } from 'react-to-print';
+import Button from 'react-bootstrap/Button';
+import ReportDisplay from './ReportDisplay';
 
 function Report() {
 
@@ -225,21 +228,19 @@ function Report() {
 
         return `${days} jour(s), ${hours} heure(s), ${minutes} minute(s), et ${seconds} second(s)`;
     }
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        pageStyle: `{ size: 2.5in 4in }`,
+        content: () => componentRef.current,
+    });
 
 
     return (
         loading ?
-            <div className="logDisplay">
-                <label><b>Analyse <i>{filename.file}</i></b></label><br></br>
-                <label>Nombre de requêtes détéctées: {requetes.length}</label><br></br>
-                <label>Nombre de requêtes uniques: {uniques.length}</label><br></br>
-                <label>Requête la plus répétée: <div className="requetes">{requeteMax}</div></label><br></br>
-                <label>Nombre répétitions: {maxOccurence}</label><br></br>
-                <label>Nombre de requêtes {'>'}1s: {plus1}</label><br></br>
-                <label>Nombre de requêtes {'>'}2s: {plus2}</label><br></br>
-                <label>Requête qui a pris le plus de temps:<div className="requetes">{requeteLongue}</div></label><br></br>
-                <label>Temps pris: {queryTime} secondes</label><br></br>
-                <label>{tempsTotal} entre l'exécution de la 1ère et la {requetes.length}ème requête</label><br></br>
+            <div>
+                <Button variant="primary" onClick={handlePrint}>Imprimer</Button>{' '}
+                <ReportDisplay filename={filename.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
+                    requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
             </div>
             :
             <Loading />

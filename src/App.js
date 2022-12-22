@@ -13,7 +13,7 @@ class App extends React.Component {
     return (
       <div className="app">
         <Router>
-          <Route exact path={['/', '/upload', '/detail/:file','/report/:file']}>
+          <Route exact path={['/', '/upload', '/detail/:file', '/report/:file']}>
             <Route exact path="/upload" component={Upload} />
             <Route exact path="/" component={List} />
             <Route exact path="/detail/:file" component={DisplayView} />

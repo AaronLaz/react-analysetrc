@@ -9,7 +9,8 @@ body {
 
 html,
 body {
-  background-color: #e6e6e6; /* Set the background color to light gray */
+  background-color: #e6e6e6;
+  /* Set the background color to light gray */
 }
 
 code {
@@ -17,14 +18,15 @@ code {
     monospace;
 }
 
-.thead-th, .tbody-th{
+.thead-th,
+.tbody-th {
   text-align: center;
 }
 
-.tableHolder{
+.tableHolder {
   width: 90%;
   margin-left: 5%;
-  border: 1px solid #ddd;
+  border: 5px solid #ddd;
   border-radius: 8px;
 }
 
@@ -38,7 +40,6 @@ code {
 .logDisplay {
   white-space: pre-wrap;
   width: 21cm;
-  height: 29.7cm;
   margin: 1cm;
 
   /* Set the aspect ratio and make the component responsive */
@@ -48,12 +49,13 @@ code {
 
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding:20px;
+  padding: 20px;
   background-color: whitesmoke;
 }
 
-.requetes{
-  box-sizing: border-box; /* Include the border in the dimensions of the element */
+.requetes {
+  box-sizing: border-box;
+  /* Include the border in the dimensions of the element */
   border: 1px solid lightcoral;
   border-radius: 8px;
   width: 100%;
@@ -70,6 +72,17 @@ code {
   }
 
   .requetes {
-    border-width: 2px; /* Increase the border width on larger devices */
+    border-width: 2px;
+    /* Increase the border width on larger devices */
   }
+}
+
+@media print {
+  .logDisplay {
+    border: none;
+  }
+}
+
+.empty {
+  text-align: center;
 }
