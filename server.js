@@ -45,7 +45,11 @@ app.get('/getfiles', function (req, res) {
 // Récupérer les noms de fichiers logs disponibles
 app.get('/detail/:filename', function (req, res) {
   var filename = req.params.filename;
-  res.send(fs.readFileSync("./logs/" + filename, { encoding: 'utf-8' }));
+  try{
+    res.send(fs.readFileSync("./logs/" + filename, { encoding: 'utf-8' }));
+  }catch(error){
+    return res.status(500).json(error);
+  }
 });
 
 // Supprimer un fichier log

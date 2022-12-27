@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Loading from "./Loading";
 import 'bootstrap/dist/css/bootstrap.css';
 import { useHistory } from 'react-router-dom';
-import './index.css';
+import '../index.css';
 
 function List() {
 

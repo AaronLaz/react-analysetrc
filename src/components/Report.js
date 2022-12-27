@@ -1,9 +1,9 @@
-import './index.css';
+import '../index.css';
 import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Loading from './Loading';
 import { useReactToPrint } from 'react-to-print';
 import Button from 'react-bootstrap/Button';
@@ -12,7 +12,7 @@ import ReportDisplay from './ReportDisplay';
 function Report() {
 
     const [loading, setLoading] = useState(false);
-    var filename = useParams();
+    var params = useParams();
     const [requetes, setRequetes] = useState([]);
     const [uniques, setUniques] = useState([]);
     const [occurences, setOccurences] = useState([]);
@@ -26,10 +26,15 @@ function Report() {
     const [tempsTotal, setTempsTotal] = useState();
     const [analyse, setAnalyse] = useState([]);
 
+    const history = useHistory();
+
     useEffect(() => {
         const sendGetRequest = async () => {
             try {
-                const resp = await axios.get(`http://localhost:8000/detail/${filename.file}`);
+                const resp = await axios.get(`http://localhost:8000/detail/${params.file}`).catch(function (error) {
+                    console.log('Error', error.message);
+                    history.push("/error");
+                });;;
                 var format = String(resp.data);
                 format = explode(format, "SET", format, true);
                 var content = [];
@@ -234,12 +239,16 @@ function Report() {
         content: () => componentRef.current,
     });
 
+    function handleClick() {
+        history.push(`/detail/${params.file}`);
+    }
 
     return (
         loading ?
             <div>
-                <Button variant="primary" onClick={handlePrint}>Imprimer</Button>{' '}
-                <ReportDisplay filename={filename.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
+                <Button variant="info" onClick={handlePrint}>Imprimer</Button>{' '}
+                <Button variant="primary" onClick={handleClick}>Accéder au log</Button>{' '}
+                <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
                     requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
             </div>
             :

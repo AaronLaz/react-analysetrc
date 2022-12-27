@@ -86,3 +86,7 @@ code {
 .empty {
   text-align: center;
 }
+
+.error {
+  background-color: #e6e6e6;
+}
