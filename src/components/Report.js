@@ -8,6 +8,7 @@ import Loading from './Loading';
 import { useReactToPrint } from 'react-to-print';
 import Button from 'react-bootstrap/Button';
 import ReportDisplay from './ReportDisplay';
+import QueryList from './QueryList';
 
 function Report() {
 
@@ -25,16 +26,17 @@ function Report() {
     const [dates, setDates] = useState([]);
     const [tempsTotal, setTempsTotal] = useState();
     const [analyse, setAnalyse] = useState([]);
+    const [showList, setShowList] = useState(false);
 
     const history = useHistory();
 
     useEffect(() => {
-        const sendGetRequest = async () => {
+        async function initValues() {
             try {
                 const resp = await axios.get(`http://localhost:8000/detail/${params.file}`).catch(function (error) {
                     console.log('Error', error.message);
                     history.push("/error");
-                });;;
+                })
                 var format = String(resp.data);
                 format = explode(format, "SET", format, true);
                 var content = [];
@@ -43,9 +45,8 @@ function Report() {
                 var tempRequetes = [];
                 var tempUniques = [];
                 var tempOccurences = [];
-                var maxI = 0;
-                var maxTime = 0;
                 var tempTemporelle = [];
+                var tempTemporelleIndex = [];
                 var tempCalculs = [];
                 var tempDates = [];
 
@@ -62,15 +63,11 @@ function Report() {
                         }
                         temp1++;
                     }
-                    // Trouver la requête qui a pris le plus de temps
-                    if (query_time > maxTime) {
-                        maxI = i;
-                        maxTime = query_time;
-                    }
                     // Extrait requêtes
-                    tempRequetes.push(content[i][1]);
+                    tempRequetes.push(content[i][1].trimStart());
                     tempTemporelle.push(query_time);
                     tempDates.push(query_date);
+                    tempTemporelleIndex.push({ key: i, value: query_time });
 
                 }
                 // Requêtes Uniques
@@ -81,10 +78,11 @@ function Report() {
                         // eslint-disable-next-line
                         tempCalculs[query] = Array.from({ length: 4 }, () => tempTemporelle[l]);
                     }
-                    if (!tempOccurences[query]) {
-                        tempOccurences[query] = 1;
+                    // Si la requête est déjà existant, ajoute au compteur, sinon ajoute la requête avec un compte de 1
+                    if (tempOccurences.findIndex(item => item.key === query) != -1) {
+                        tempOccurences[tempOccurences.findIndex(item => item.key === query)].value += 1;
                     } else {
-                        tempOccurences[query] += 1;
+                        tempOccurences.push({ key: query, value: 1 });
                     }
                     // Temps d'exécution de chaque requête: min,max,moyen,cumulé
                     // min
@@ -97,12 +95,11 @@ function Report() {
                     }
                     // cumul
                     tempCalculs[query][3] += tempTemporelle[l];
-                    // moyen
                 }
+                // moyen
                 tempCalculs.forEach((query => {
-                    query[2] = tempTemporelle[query][3] / tempOccurences[query];
+                    query[2] = query[3] / tempOccurences[tempOccurences.findIndex(item => item.key === query)].count;
                 }))
-
 
                 tempUniques.sort((a, b) => {
                     let numParamsA = 0;
@@ -125,23 +122,24 @@ function Report() {
                     return a.length - b.length;
                 });
 
-                // console.log(tempRequetes[tempOccurences.indexOf(Math.max(...occurences))]);
-
                 // Requête qui se produit le plus, avec son nombre d'occurences
-                const sortedQueries = Object.entries(tempOccurences).sort((a, b) => b[1] - a[1]);
-                const mostFrequentQuery = sortedQueries[0][0];
-                const mostFrequentQueryCount = sortedQueries[0][1];
+                const sortedQueries = tempOccurences.sort((a, b) => b.value - a.value);
+                const mostFrequentQuery = sortedQueries[0].key;
+                const mostFrequentQueryCount = sortedQueries[0].value;
+
+                // trier les temps d'exécution
+                tempTemporelleIndex.sort((a, b) => b.value - a.value);
 
 
                 setMaxOccurence(mostFrequentQueryCount);
-                setRequeteMax(mostFrequentQuery.trimStart());
+                setRequeteMax(mostFrequentQuery);
                 setPlus1(temp1);
                 setPlus2(temp2);
                 setRequetes(tempRequetes);
                 setUniques(tempUniques);
-                setOccurences(tempOccurences);
-                setQueryTime(maxTime);
-                setRequeteLongue(tempRequetes[maxI].trimStart());
+                setOccurences(sortedQueries);
+                setQueryTime(tempTemporelleIndex[0].value);
+                setRequeteLongue(tempRequetes[tempTemporelleIndex[0].key]);
                 setDates(tempDates);
                 setTempsTotal(timeConverter(difference(tempDates[0], tempDates[tempDates.length - 1])));
                 setAnalyse(tempCalculs);
@@ -149,7 +147,7 @@ function Report() {
                 toast.error(err);
             }
         };
-        sendGetRequest();
+        initValues();
         setTimeout(() => setLoading(true), 1000);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -243,13 +241,25 @@ function Report() {
         history.push(`/detail/${params.file}`);
     }
 
+    function queryList() {
+        setShowList(!showList);
+    }
+
     return (
         loading ?
             <div>
                 <Button variant="info" onClick={handlePrint}>Imprimer</Button>{' '}
                 <Button variant="primary" onClick={handleClick}>Accéder au log</Button>{' '}
-                <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
-                    requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
+                <Button variant="primary" onClick={queryList}>{showList ? "Afficher rapport" : "Afficher liste des requêtes"}</Button>{' '}
+                <div className='logDisplay'>
+                    <label><b>Analyse <i>{params.file}</i></b></label><br></br>
+                    {showList ?
+                        <QueryList occurencecount={occurences} analyse={analyse} />
+                        :
+                        <ReportDisplay nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
+                            requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
+                    }
+                </div>
             </div>
             :
             <Loading />

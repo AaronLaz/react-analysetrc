@@ -1,14 +1,25 @@
 import '../index.css';
-import React from "react";
+import React, { useState, useEffect } from "react";
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from './Loading';
 
-export default class ErrorReport extends React.Component {
+function ErrorReport(props) {
 
-    render() {
-        return (
-            <div className="logDisplay">
-                <label><b>Erreurs <i>{this.props.filename}</i></b></label><br></br>
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => setLoading(true), 1000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        loading ?
+            <div>
+                <label><b>Erreurs <i>{props.filename}</i></b></label><br></br>
             </div>
-        )
-    }
+            :
+            <Loading />
+    )
 }
+
+export default ErrorReport;

@@ -39,7 +39,7 @@ function DisplayView() {
 
     return (
         loading ?
-            <div className="container">
+            <div>
                 <Button variant="primary" onClick={handleClick}>Accéder au rapport</Button>{' '}
                 <div className="logDisplay">
                     <label><b>{params.file}</b></label><br></br>

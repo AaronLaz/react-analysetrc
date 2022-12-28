@@ -90,3 +90,7 @@ code {
 .error {
   background-color: #e6e6e6;
 }
+
+.cardDisplay {
+  white-space: pre-wrap;
+}
