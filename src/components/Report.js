@@ -79,7 +79,9 @@ function Report() {
                         tempCalculs[query] = Array.from({ length: 4 }, () => tempTemporelle[l]);
                     }
                     // Si la requête est déjà existant, ajoute au compteur, sinon ajoute la requête avec un compte de 1
-                    if (tempOccurences.findIndex(item => item.key === query) != -1) {
+                    // eslint-disable-next-line
+                    if (tempOccurences.findIndex(item => item.key === query) !== -1) {
+                        // eslint-disable-next-line
                         tempOccurences[tempOccurences.findIndex(item => item.key === query)].value += 1;
                     } else {
                         tempOccurences.push({ key: query, value: 1 });
@@ -252,11 +254,11 @@ function Report() {
                 <Button variant="primary" onClick={handleClick}>Accéder au log</Button>{' '}
                 <Button variant="primary" onClick={queryList}>{showList ? "Afficher rapport" : "Afficher liste des requêtes"}</Button>{' '}
                 <div className='logDisplay'>
-                    <label><b>Analyse <i>{params.file}</i></b></label><br></br>
+                    <label><b>Analyse <i>{params.file}{"\n"}</i></b></label>
                     {showList ?
                         <QueryList occurencecount={occurences} analyse={analyse} />
                         :
-                        <ReportDisplay nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
+                        <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
                             requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
                     }
                 </div>

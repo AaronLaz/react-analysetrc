@@ -77,9 +77,16 @@ code {
   }
 }
 
+.hiddenTitle{
+  content-visibility: hidden;
+}
+
 @media print {
   .logDisplay {
     border: none;
+  }
+  .hiddenTitle{
+    content-visibility: visible;
   }
 }
 

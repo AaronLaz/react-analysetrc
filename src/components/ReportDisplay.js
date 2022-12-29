@@ -1,34 +1,42 @@
 import '../index.css';
-import React, { useState, useEffect } from "react";
+import React, {useEffect} from "react";
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from './Loading';
 
-function ReportDisplay(props) {
+export default class ReportDisplay extends React.Component {
 
-    const [loading, setLoading] = useState(false);
+    constructor(props) {
+        super(props);
+        this.state = {
+          loading : false,
+        }
+      }
 
-    useEffect(() => {
-        setLoading(false);
-        setTimeout(() => setLoading(true), 1000);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      componentDidMount = () => {
+        setTimeout(() => this.setState({loading:true}), 1000);
+      }
 
-    return (
-        loading ?
-            <div>
-                <label>Nombre de requêtes détéctées: {props.nbRequetes}</label><br></br>
-                <label>Nombre de requêtes uniques: {props.uniques}</label><br></br>
-                <label>Requête la plus répétée: <div className="requetes">{props.requeteMax}</div></label><br></br>
-                <label>Nombre répétitions: {props.maxOccurence}</label><br></br>
-                <label>Nombre de requêtes {'>'}1s: {props.plus1}</label><br></br>
-                <label>Nombre de requêtes {'>'}2s: {props.plus2}</label><br></br>
-                <label>Requête qui a pris le plus de temps:<div className="requetes">{props.requeteLongue}</div></label><br></br>
-                <label>Temps pris: {props.queryTime} secondes</label><br></br>
-                <label>{props.tempsTotal} entre l'exécution de la 1ère et la {props.nbRequetes}ème requête</label><br></br>
+    render(){
+        return (
+        this.state.loading ? 
+        <div>
+            <div className="hiddenTitle">
+                <label><b>Analyse <i>{this.props.filename} {"\n"}</i></b></label>
             </div>
-            :
-            <Loading />
+            <label>Nombre de requêtes détéctées: {this.props.nbRequetes} {"\n"}</label>
+            <label>Nombre de requêtes uniques: {this.props.uniques} {"\n"}</label>
+            <label>Requête la plus répétée: <div className="requetes">{this.props.requeteMax} {"\n"}</div></label>
+            <label>Nombre répétitions: {this.props.maxOccurence} {"\n"}</label>
+            <label>Nombre de requêtes {'>'}1s: {this.props.plus1} {"\n"}</label>
+            <label>Nombre de requêtes {'>'}2s: {this.props.plus2} {"\n"}</label>
+            <label>Requête qui a pris le plus de temps:<div className="requetes">{this.props.requeteLongue} {"\n"}</div></label>
+            <label>Temps pris: {this.props.queryTime} secondes {"\n"}</label>
+            <label>{this.props.tempsTotal} entre l'exécution de la 1ère et la {this.props.nbRequetes} ème requête {"\n"} </label>
+        </div>
+        :
+        <Loading />
     )
+    }
+    
 }
 
-export default ReportDisplay;

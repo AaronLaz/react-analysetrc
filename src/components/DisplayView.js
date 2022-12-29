@@ -42,7 +42,9 @@ function DisplayView() {
             <div>
                 <Button variant="primary" onClick={handleClick}>Accéder au rapport</Button>{' '}
                 <div className="logDisplay">
-                    <label><b>{params.file}</b></label><br></br>
+                    <div>
+                       <label><b>{params.file}</b></label> 
+                    </div>
                     {log}
                 </div>
             </div>

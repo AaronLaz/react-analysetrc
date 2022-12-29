@@ -15,7 +15,7 @@ function ErrorReport(props) {
     return (
         loading ?
             <div>
-                <label><b>Erreurs <i>{props.filename}</i></b></label><br></br>
+                <label><b>Erreurs <i>{props.filename}{"\n"}</i></b></label>
             </div>
             :
             <Loading />
