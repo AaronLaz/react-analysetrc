@@ -101,3 +101,7 @@ code {
 .cardDisplay {
   white-space: pre-wrap;
 }
+
+.content > div {
+  padding-top: 1%;
+}

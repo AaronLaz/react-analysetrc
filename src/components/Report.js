@@ -254,7 +254,7 @@ function Report() {
                 <Button variant="primary" onClick={handleClick}>Accéder au log</Button>{' '}
                 <Button variant="primary" onClick={queryList}>{showList ? "Afficher rapport" : "Afficher liste des requêtes"}</Button>{' '}
                 <div className='logDisplay'>
-                    <label><b>Analyse <i>{params.file}{"\n"}</i></b></label>
+                    <label><b>Analyse <i>{params.file}</i></b></label>
                     {showList ?
                         <QueryList occurencecount={occurences} analyse={analyse} />
                         :

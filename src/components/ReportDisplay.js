@@ -19,19 +19,19 @@ export default class ReportDisplay extends React.Component {
     render(){
         return (
         this.state.loading ? 
-        <div>
+        <div className='content'>
             <div className="hiddenTitle">
-                <label><b>Analyse <i>{this.props.filename} {"\n"}</i></b></label>
+                <div><b>Analyse <i>{this.props.filename}</i></b></div>
             </div>
-            <label>Nombre de requêtes détéctées: {this.props.nbRequetes} {"\n"}</label>
-            <label>Nombre de requêtes uniques: {this.props.uniques} {"\n"}</label>
-            <label>Requête la plus répétée: <div className="requetes">{this.props.requeteMax} {"\n"}</div></label>
-            <label>Nombre répétitions: {this.props.maxOccurence} {"\n"}</label>
-            <label>Nombre de requêtes {'>'}1s: {this.props.plus1} {"\n"}</label>
-            <label>Nombre de requêtes {'>'}2s: {this.props.plus2} {"\n"}</label>
-            <label>Requête qui a pris le plus de temps:<div className="requetes">{this.props.requeteLongue} {"\n"}</div></label>
-            <label>Temps pris: {this.props.queryTime} secondes {"\n"}</label>
-            <label>{this.props.tempsTotal} entre l'exécution de la 1ère et la {this.props.nbRequetes} ème requête {"\n"} </label>
+            <div>Nombre de requêtes détéctées: {this.props.nbRequetes}</div>
+            <div>Nombre de requêtes uniques: {this.props.uniques}</div>
+            <div>Requête la plus répétée: <div className="requetes">{this.props.requeteMax}</div></div>
+            <div>Nombre répétitions: {this.props.maxOccurence}</div>
+            <div>Nombre de requêtes {'>'}1s: {this.props.plus1}</div>
+            <div>Nombre de requêtes {'>'}2s: {this.props.plus2}</div>
+            <div>Requête qui a pris le plus de temps:<div className="requetes">{this.props.requeteLongue}</div></div>
+            <div>Temps pris: {this.props.queryTime} secondes</div>
+            <div>{this.props.tempsTotal} entre l'exécution de la 1ère et la {this.props.nbRequetes} ème requête</div>
         </div>
         :
         <Loading />
