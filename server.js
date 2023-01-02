@@ -6,6 +6,7 @@ const fs = require('fs');
 
 app.use(cors());
 
+// Définition de la destination du fichier
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'logs')
@@ -17,6 +18,7 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage }).single('file');
 
+// Upload d'un fichier log dans le fichier logs
 app.post('/upload', function (req, res) {
 
   upload(req, res, function (err) {
@@ -26,9 +28,7 @@ app.post('/upload', function (req, res) {
       return res.status(500).json(err)
     }
     return res.status(200).send(req.file)
-
   })
-
 });
 
 // Récupérer les noms de fichiers logs disponibles
@@ -45,9 +45,9 @@ app.get('/getfiles', function (req, res) {
 // Récupérer les noms de fichiers logs disponibles
 app.get('/detail/:filename', function (req, res) {
   var filename = req.params.filename;
-  try{
+  try {
     res.send(fs.readFileSync("./logs/" + filename, { encoding: 'utf-8' }));
-  }catch(error){
+  } catch (error) {
     return res.status(500).json(error);
   }
 });
@@ -65,8 +65,7 @@ app.delete('/delete/:filename', function (req, res) {
   });
 });
 
+// Numéro de port à utiliser
 app.listen(8000, function () {
-
   console.log('App tourne sur le port 8000');
-
 });

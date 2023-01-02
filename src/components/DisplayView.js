@@ -15,6 +15,7 @@ function DisplayView() {
     const history = useHistory();
 
     useEffect(() => {
+        // Récupérer le contenu du log
         const sendGetRequest = async () => {
             try {
                 const resp = await axios.get(`http://localhost:8000/detail/${params.file}`).catch(function (error) {
@@ -43,7 +44,7 @@ function DisplayView() {
                 <Button variant="primary" onClick={handleClick}>Accéder au rapport</Button>{' '}
                 <div className="logDisplay">
                     <div>
-                       <label><b>{params.file}</b></label> 
+                        <label><b>{params.file}</b></label>
                     </div>
                     {log}
                 </div>

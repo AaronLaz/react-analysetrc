@@ -16,6 +16,7 @@ function Upload() {
     setTimeout(() => setLoading(true), 1000);
   }, []);
 
+  // Vérification sécurité fichier
   function onChangeHandler(event) {
     if (checkType(event) && checkFileSize(event)) {
       setSelectedFile(event.target.files[0]);
@@ -23,6 +24,7 @@ function Upload() {
     setSelectedFile(event.target.files[0]);
   }
 
+  // Déclenche l'upload du fichier
   function onClickHandler() {
     if (selectedFile != null) {
       const data = new FormData();
@@ -42,6 +44,7 @@ function Upload() {
 
   }
 
+  // Sécurité pour vérifier le type du fichier avant upload
   function checkType(event) {
     //message d'erreur
     let err = '';
@@ -60,6 +63,7 @@ function Upload() {
     return true;
   }
 
+  // Sécurité pour vérifier la taille du fichier avant upload
   function checkFileSize(event) {
     let size = 20000000 // 20 mb
     let err = "";

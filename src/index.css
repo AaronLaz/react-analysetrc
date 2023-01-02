@@ -30,6 +30,10 @@ code {
   border-radius: 8px;
 }
 
+.tableHolder > h3 {
+  text-align: center;
+}
+
 .app {
   display: flex;
   justify-content: center;
@@ -104,4 +108,8 @@ code {
 
 .content > div {
   padding-top: 1%;
+}
+
+.listRequete {
+  word-break: break-word;
 }
