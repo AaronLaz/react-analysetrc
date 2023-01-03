@@ -117,28 +117,6 @@ function Report() {
                     }
                 }
 
-                // Triage requêtes par nombre de paramètres ou longeur
-                tempUniques.sort((a, b) => {
-                    let numParamsA = 0;
-                    let numParamsB = 0;
-
-                    // Vérifier si la clause "WHERE" est présent
-                    if (a.split("WHERE").length > 1) {
-                        numParamsA = a.split("WHERE")[1].split("AND").length;
-                    }
-                    if (b.split("WHERE").length > 1) {
-                        numParamsB = b.split("WHERE")[1].split("AND").length;
-                    }
-
-                    // Trier en premier par le nb de paramères dans la clause "WHERE"
-                    if (numParamsA !== numParamsB) {
-                        return numParamsA - numParamsB;
-                    }
-
-                    // si le nb de params est égale, trier par la longeur de la requête
-                    return a.length - b.length;
-                });
-
                 // Requête qui se produit le plus, avec son nombre d'occurences
                 const sortedQueries = tempOccurences.sort((a, b) => b.value - a.value);
                 const mostFrequentQuery = sortedQueries[0].key;
@@ -204,7 +182,7 @@ function Report() {
                 <div className='logDisplay'>
                     <label><b>Analyse <i>{params.file}</i></b></label>
                     {showList ?
-                        <QueryList occurencecount={occurences} analyse={analyse} date={date} />
+                        <QueryList occurencecount={occurences} analyse={analyse} date={date} uniques={uniques}/>
                         :
                         <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
                             requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
