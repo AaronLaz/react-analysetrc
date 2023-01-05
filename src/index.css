@@ -113,3 +113,7 @@ code {
 .listRequete {
   word-break: break-word;
 }
+
+.sort_options {
+  width: 30% !important;
+}

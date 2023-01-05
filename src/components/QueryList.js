@@ -8,13 +8,13 @@ import { difference, timeConverter } from './Report';
 function QueryList(props) {
 
     const [loading, setLoading] = useState(false);
-    const [listeRequetes, setListeRequetes] = useState(props.occurencecount);
+    const [listeRequetes, setListeRequetes] = useState(props.occurencecount.slice().sort((a, b) => a.value - b.value));
     const [show, setShow] = useState(false);
     const [detailRequete, setDetailRequete] = useState([0, 0, 0, 0]);
     const [requete, setRequete] = useState("");
     const [date, setDate] = useState([]);
     const [temps, setTemps] = useState();
-    const [option, setOption] = useState('occurence_desc');
+    const [option, setOption] = useState('occurence_asc');
 
     // Fermeture modal
     const handleClose = () => setShow(false);
@@ -33,10 +33,8 @@ function QueryList(props) {
         setShow(true);
     };
 
-    // TODO: FIX
-    const sortUniqueQueries = (requetes, desc) => {
-        let liste = requetes;
-        let temp;
+    const sortUniqueQueries = (requetes, desc, long) => {
+        let liste = requetes.slice();
         // Triage requêtes par nombre de paramètres ou longeur
         liste.sort((a, b) => {
             let numParamsA = 0;
@@ -52,26 +50,36 @@ function QueryList(props) {
 
             if (desc) {
                 // Trier en premier par le nb de paramères dans la clause "WHERE"
-                if (numParamsA !== numParamsB) {
-                    temp = numParamsA - numParamsB;
+                if (long) { // Trier par nb de paramètres et longueur de la requête
+                    if (numParamsA !== numParamsB) {
+                        return numParamsB - numParamsA;
+                    }
+                    else {
+                        // si le nb de params est égale, trier par la longeur de la requête
+                        return a.key.length - b.key.length;
+                    }
+                } else {
+                    // Tri par nb de paramètres
+                    return numParamsB - numParamsA;
                 }
-                else {
-                    // si le nb de params est égale, trier par la longeur de la requête
-                    temp = a.key.length - b.key.length;
-                }
+
             } else {
                 // Trier en premier par le nb de paramères dans la clause "WHERE"
-                if (numParamsA !== numParamsB) {
-                    temp = numParamsB - numParamsA;
-                }
-                else {
-                    // si le nb de params est égale, trier par la longeur de la requête
-                    temp = a.key.length - b.key.length;
+                if (long) { // Trier par nb de paramètres et longueur de la requête
+                    if (numParamsA !== numParamsB) {
+                        return numParamsA - numParamsB;
+                    }
+                    else {
+                        // si le nb de params est égale, trier par la longeur de la requête
+                        return a.key.length - b.key.length;
+                    }
+                } else {
+                    // Tri par nb de paramètres
+                    return numParamsA - numParamsB;
                 }
             }
-            return temp;
         });
-        return temp;
+        return liste;
     }
 
 
@@ -84,13 +92,19 @@ function QueryList(props) {
                 temp = liste.slice().sort((a, b) => a.value - b.value);
                 break;
             case "occurence_desc":
-                temp = liste;
+                temp = liste.slice().sort((a, b) => b.value - a.value);
                 break;
             case "params_desc":
-                temp = sortUniqueQueries(liste, true);
+                temp = sortUniqueQueries(liste, true, false);
                 break;
             case "params_asc":
-                temp = sortUniqueQueries(liste, false);
+                temp = sortUniqueQueries(liste, false, false);
+                break;
+            case "long_desc":
+                temp = sortUniqueQueries(liste, true, true);
+                break;
+            case "long_asc":
+                temp = sortUniqueQueries(liste, false, true);
                 break;
             default:
                 console.log('default');
@@ -111,12 +125,14 @@ function QueryList(props) {
             <div>
                 <h3>Liste des requêtes</h3>
                 <Form.Group className="mb-3">
-                    <Form.Label>Tri de la liste</Form.Label>
-                    <Form.Select value={option} onChange={handleChange}>
-                        <option value="occurence_desc">Occurences desc</option>
-                        <option value="occurence_asc">Occurences asc</option>
-                        <option value="params_desc">Params desc</option>
-                        <option value="params_asc">Params asc</option>
+                    <Form.Label>Options de tri <i>* pointer sur les options dans la sélection pour en savoir plus</i></Form.Label>
+                    <Form.Select value={option} onChange={handleChange} className="sort_options">
+                        <option value="occurence_asc" title="Tri par nombre d'occurences en ordre ascendant">Occurences asc</option>
+                        <option value="occurence_desc" title="Tri par nombre d'occurences en ordre descendant">Occurences desc</option>
+                        <option value="params_asc" title="Tri par nombre de paramètres en ordre ascendant">Params asc</option>
+                        <option value="params_desc" title="Tri par nombre de paramètres en ordre descendant">Params desc</option>
+                        <option value="long_asc" title="Tri par longueur après tri par paramètres en ordre ascendant">Longueur asc</option>
+                        <option value="long_desc" title="Tri par longueur après tri par paramètres en ordre descendant">Longueur desc</option>
                     </Form.Select>
                 </Form.Group>
                 <Table striped bordered hover>
