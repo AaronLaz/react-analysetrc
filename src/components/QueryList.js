@@ -33,53 +33,179 @@ function QueryList(props) {
         setShow(true);
     };
 
-    const sortUniqueQueries = (requetes, desc, long) => {
-        let liste = requetes.slice();
-        // Triage requêtes par nombre de paramètres ou longeur
-        liste.sort((a, b) => {
-            let numParamsA = 0;
-            let numParamsB = 0;
+    // Implémentation triage classique avec fonction Array.sort (complexité de 0(n^2)) (~50-90ms)
+    // const sortUniqueQueries = (requetes, params_desc, long) => {
+    //     let liste = requetes.slice();
+    //     // Triage requêtes par nombre de paramètres ou longeur
+    //     liste.sort((a, b) => {
+    //         let numParamsA = 0;
+    //         let numParamsB = 0;
 
-            // Vérifier si la clause "WHERE" est présent
-            if (a.key.split("WHERE").length > 1) {
-                numParamsA = a.key.split("WHERE")[1].split("AND").length;
-            }
-            if (b.key.split("WHERE").length > 1) {
-                numParamsB = b.key.split("WHERE")[1].split("AND").length;
-            }
+    //         // Vérifier si la clause "WHERE" est présent
+    //         if (a.key.split("WHERE").length > 1) {
+    //             numParamsA = a.key.split("WHERE")[1].split("AND").length;
+    //         }
+    //         if (b.key.split("WHERE").length > 1) {
+    //             numParamsB = b.key.split("WHERE")[1].split("AND").length;
+    //         }
 
-            if (desc) {
-                // Trier en premier par le nb de paramères dans la clause "WHERE"
-                if (long) { // Trier par nb de paramètres et longueur de la requête
-                    if (numParamsA !== numParamsB) {
-                        return numParamsB - numParamsA;
-                    }
-                    else {
-                        // si le nb de params est égale, trier par la longeur de la requête
-                        return a.key.length - b.key.length;
-                    }
-                } else {
-                    // Tri par nb de paramètres
-                    return numParamsB - numParamsA;
-                }
+    //         // Tri par nombre de paramètres descendant
+    //         if (params_desc) {
+    //             // Trier en premier par le nb de paramères dans la clause "WHERE"
+    //             if (long) { // Trier par nb de paramètres et longueur de la requête
+    //                 if (numParamsA !== numParamsB) {
+    //                     return numParamsB - numParamsA;
+    //                 }
+    //                 else {
+    //                     // si le nb de params est égale, trier par la longeur de la requête
+    //                     return a.key.length - b.key.length;
+    //                 }
+    //             } else {
+    //                 // Tri par nb de paramètres
+    //                 return numParamsB - numParamsA;
+    //             }
 
+    //         }
+    //         // Tri par nombre de paramètres ascendant
+    //         else {
+    //             // Trier en premier par le nb de paramères dans la clause "WHERE"
+    //             if (long) { // Trier par nb de paramètres et longueur de la requête
+    //                 if (numParamsA !== numParamsB) {
+    //                     return numParamsA - numParamsB;
+    //                 }
+    //                 else {
+    //                     // si le nb de params est égale, trier par la longeur de la requête
+    //                     return a.key.length - b.key.length;
+    //                 }
+    //             } else {
+    //                 // Tri par nb de paramètres
+    //                 return numParamsA - numParamsB;
+    //             }
+    //         }
+    //     });
+    //     return liste;
+    // }
+
+    // Implémentation arbre de recherche binaire (BST) pour améliorer la compléxité du triage (O(n log(n))) (~38-40ms)
+    class Node {
+        // Création d'un noeud de l'arbre
+        constructor(key, value, numParams, left = null, right = null) {
+            // Assigner les valeurs de base de chaque requête (contenu requete et compte) et aussi numParam: le nombre de paramètres dans la clause WHERE
+            this.key = key;
+            this.value = value;
+            this.numParams = numParams;
+
+            // Initialiser à null les valeurs des sous-arbres gauche et droit
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    class BinarySearchTree {
+        // Création d'une nouvelle arbre de recherche
+        constructor() {
+            // Initialise la racine de l'arbre à null
+            this.root = null;
+        }
+
+        // Insérer un nouveau noeud dans l'arbre
+        insert(key, value, numParams) {
+            // Créer un nouveau noeud à partir des valeurs (requête, compte et nb params)
+            const newNode = new Node(key, value, numParams);
+
+            // Si l'arbre est vide, on assigne le noeud comme la racine
+            if (this.root === null) {
+                this.root = newNode;
             } else {
-                // Trier en premier par le nb de paramères dans la clause "WHERE"
-                if (long) { // Trier par nb de paramètres et longueur de la requête
-                    if (numParamsA !== numParamsB) {
-                        return numParamsA - numParamsB;
-                    }
-                    else {
-                        // si le nb de params est égale, trier par la longeur de la requête
-                        return a.key.length - b.key.length;
-                    }
+                // Sinon, insérer le noeud à la bonne position dans l'arbre
+                this.insertNode(this.root, newNode);
+            }
+        }
+
+        // Fonction auxiliaire récursive pour mettre un noeud dans la bonne position dans l'arbre
+        insertNode(node, newNode) {
+            // Si le nombre de paramètres du nouveau noeud est inférieur au noeud courant, on insére le noeud au sous-arbre gauche
+            if (newNode.numParams < node.numParams) {
+                // Si le sous-arbre gauche de l'arbre courant est null, on insère le noeud
+                if (node.left === null) {
+                    node.left = newNode;
                 } else {
-                    // Tri par nb de paramètres
-                    return numParamsA - numParamsB;
+                    // Sinon, appel récursif sur le sous-arbre gauche
+                    this.insertNode(node.left, newNode);
+                }
+            } else {
+                // Si le nombre de paramètres du nouveau noeud est supérieur au noeud courant, on insére le noeud au sous-arbre droit
+                if (node.right === null) {
+                    // Si le sous-arbre droit de l'arbre courant est null, on insère le noeud
+                    node.right = newNode;
+                } else {
+                    // Sinon, appel récursif sur le sous-arbre droit
+                    this.insertNode(node.right, newNode);
                 }
             }
-        });
-        return liste;
+        }
+
+        // Méthode pour traverser l'arbre dans l'ordre et retourner un tableau trié
+        inOrderTraverse() {
+            // Initialise un tableau vide pour contenir les valeurs triées
+            const sorted = [];
+
+            // Appel de la fonction aux inOrderTraverseNode
+            this.inOrderTraverseNode(this.root, sorted);
+
+            // Retourne tableau trié
+            return sorted;
+        }
+
+        // Fonction aux récursive pour traverser l'arbre de recherche dans l'ordre
+        inOrderTraverseNode(node, sorted) {
+            // Si le noeud courant n'est pas nul, appeler récursivement inOrderTraverseNode sur le sous-arbre gauche
+            if (node !== null) {
+                this.inOrderTraverseNode(node.left, sorted);
+
+                // Ajout les valeurs du noeud courant dans le tableau trié
+                sorted.push({ key: node.key, value: node.value });
+
+                //Appeler récursivement inOrderTraverseNode sur le sous-arbre droit
+                this.inOrderTraverseNode(node.right, sorted);
+            }
+        }
+
+        // Méthode pour trier les requêtes uniques utilisant l'arbre binaire de recherche
+        sortUniqueQueries(requetes, desc, long) {
+            // Initialise un nouveau arbre binaire de recherche
+            const bst = new BinarySearchTree();
+
+            // Parcourir le tableau de requêtes et insérez chaque requête unique dans l'arbre de recherche
+            for (const query of requetes) {
+                // Calcul du nombre de paramètres pour chaque requête
+                let numParams = 0;
+                if (query.key.split("WHERE").length > 1) {
+                    numParams = query.key.split("WHERE")[1].split("AND").length;
+                }
+
+                // Insérer la requête dans l'arbre de recherche
+                bst.insert(query.key, query.value, numParams);
+            }
+
+            // Traverser dans l'ordre l'arbre de recherche pour obtenir un tableau de requêtes trié
+            let sorted = bst.inOrderTraverse();
+
+            // Triage par longueur
+            if (long) {
+                sorted.sort((a, b) => {
+                    return a.key.length - b.key.length;
+                });
+            }
+
+            // Triage en ordre descendant
+            if (desc) {
+                sorted.reverse();
+            }
+
+            // Retourne le tableau trié
+            return sorted;
+        }
     }
 
 
@@ -87,6 +213,7 @@ function QueryList(props) {
         setOption(event.target.value);
         let liste = props.occurencecount;
         let temp;
+        let tree = new BinarySearchTree();
         switch (event.target.value) {
             case "occurence_asc":
                 temp = liste.slice().sort((a, b) => a.value - b.value);
@@ -95,16 +222,16 @@ function QueryList(props) {
                 temp = liste.slice().sort((a, b) => b.value - a.value);
                 break;
             case "params_desc":
-                temp = sortUniqueQueries(liste, true, false);
+                temp = tree.sortUniqueQueries(liste, true, false);
                 break;
             case "params_asc":
-                temp = sortUniqueQueries(liste, false, false);
+                temp = tree.sortUniqueQueries(liste, false, false);
                 break;
             case "long_desc":
-                temp = sortUniqueQueries(liste, true, true);
+                temp = tree.sortUniqueQueries(liste, true, true);
                 break;
             case "long_asc":
-                temp = sortUniqueQueries(liste, false, true);
+                temp = tree.sortUniqueQueries(liste, false, true);
                 break;
             default:
                 console.log('default');
