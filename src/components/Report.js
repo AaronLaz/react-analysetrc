@@ -6,9 +6,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useHistory, useParams } from 'react-router-dom';
 import Loading from './Loading';
 import { useReactToPrint } from 'react-to-print';
-import Button from 'react-bootstrap/Button';
+import { Button, Modal, Form } from 'react-bootstrap';
 import ReportDisplay from './ReportDisplay';
 import QueryList from './QueryList';
+import ErrorReport from './ErrorReport';
 
 function Report() {
 
@@ -16,17 +17,23 @@ function Report() {
     var params = useParams();
     const [requetes, setRequetes] = useState([]);
     const [uniques, setUniques] = useState([]);
-    const [occurences, setOccurences] = useState([]);
+    const [occurrences, setOccurrences] = useState([]);
     const [plus1, setPlus1] = useState(0);
     const [plus2, setPlus2] = useState(0);
-    const [maxOccurence, setMaxOccurence] = useState(0);
+    const [maxOccurrence, setMaxOccurrence] = useState(0);
     const [requeteMax, setRequeteMax] = useState("");
     const [requeteLongue, setRequeteLongue] = useState("");
     const [queryTime, setQueryTime] = useState([]);
+    const [tempIndex, setTempIndex] = useState([]);
     const [date, setDate] = useState([]);
+    const [dateIndex, setDateIndex] = useState([]);
     const [tempsTotal, setTempsTotal] = useState();
     const [analyse, setAnalyse] = useState([]);
     const [showList, setShowList] = useState(false);
+    const [showParamsErr, setShowParamsErr] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [paramTemps, setParamTemps] = useState(0);
+    const [paramOccurrences, setParamOccurrences] = useState(0);
 
     const history = useHistory();
 
@@ -48,7 +55,7 @@ function Report() {
                 var temp2 = 0;
                 var tempRequetes = [];
                 var tempUniques = [];
-                var tempOccurences = [];
+                var tempOccurrences = [];
                 var tempTemporelle = [];
                 var tempTemporelleIndex = [];
                 var tempCalculs = [];
@@ -91,11 +98,11 @@ function Report() {
                     }
                     // Si la requête est déjà existant, ajoute au compteur, sinon ajoute la requête avec un compte de 1
                     // eslint-disable-next-line
-                    if (tempOccurences.findIndex(item => item.key === query) !== -1) {
-                        tempOccurences[tempOccurences.findIndex(item => item.key === query)].value += 1;
+                    if (tempOccurrences.findIndex(item => item.key === query) !== -1) {
+                        tempOccurrences[tempOccurrences.findIndex(item => item.key === query)].value += 1;
                         tempDates_by_query[query].push(temp_query.value.query_date);
                     } else {
-                        tempOccurences.push({ key: query, value: 1 });
+                        tempOccurrences.push({ key: query, value: 1 });
                         tempDates_by_query[query] = [temp_query.value.query_date];
                     }
                     // Temps d'exécution de chaque requête: min,max,moyen,cumulé
@@ -111,14 +118,14 @@ function Report() {
                     tempCalculs[query][3] += tempTemporelle[l];
 
                     //moyen
-                    let index = tempOccurences.findIndex(item => item.key === query);
+                    let index = tempOccurrences.findIndex(item => item.key === query);
                     if (index !== -1) {
-                        tempCalculs[query][2] = tempCalculs[query][3] / tempOccurences[index].value;
+                        tempCalculs[query][2] = tempCalculs[query][3] / tempOccurrences[index].value;
                     }
                 }
 
-                // Requête qui se produit le plus, avec son nombre d'occurences
-                const sortedQueries = tempOccurences.sort((a, b) => b.value - a.value);
+                // Requête qui se produit le plus, avec son nombre d'occurrences
+                const sortedQueries = tempOccurrences.sort((a, b) => b.value - a.value);
                 const mostFrequentQuery = sortedQueries[0].key;
                 const mostFrequentQueryCount = sortedQueries[0].value;
 
@@ -126,20 +133,22 @@ function Report() {
                 tempTemporelleIndex.sort((a, b) => b.value - a.value);
 
 
-                setMaxOccurence(mostFrequentQueryCount);
+                setMaxOccurrence(mostFrequentQueryCount);
                 setRequeteMax(mostFrequentQuery);
                 setPlus1(temp1);
                 setPlus2(temp2);
                 setRequetes(tempRequetes);
                 setUniques(tempUniques);
-                setOccurences(sortedQueries);
+                setOccurrences(sortedQueries);
+                setTempIndex(tempTemporelleIndex);
                 setQueryTime(tempTemporelleIndex[0].value);
                 setRequeteLongue(tempRequetes[tempTemporelleIndex[0].key]);
                 const first_query = tempDates.find(obj => obj.key === 0); // 1ère requete
                 const last_query = tempDates.find(obj => obj.key === tempDates.length - 1); // dernière requete
                 setTempsTotal(timeConverter(difference(first_query.value.query_date, last_query.value.query_date)));
                 setAnalyse(tempCalculs);
-                setDate(tempDates_by_query);
+                setDate(tempDates_by_query); // date d'exécution pour chaque requête
+                setDateIndex(tempDates);
             } catch (err) {
                 toast.error(err);
             }
@@ -169,25 +178,103 @@ function Report() {
         setShowList(!showList);
     }
 
+    // Modifier paramètre génération rapport erreur du nombre d'occurences
+    function handleChangeOcc(event) {
+        setParamOccurrences(event.target.value);
+    }
+
+    // Modifier paramètre génération rapport erreur du nombre d'occurences
+    function handleChangeTemps(event) {
+        setParamTemps(event.target.value);
+    }
+
+    // Afficher paramètres de génération de rapport d'erreur
+    function handleShow() {
+        setShowParamsErr(true);
+    }
+
+    // Annuler changements paramètres rapport erreur et fermer le modal
+    function handleClose() {
+        setParamOccurrences(0);
+        setParamTemps(0);
+        setShowParamsErr(false);
+    }
+
+    function handleSubmit() {
+        setShowParamsErr(false);
+        setShowError(true);
+    }
+
+    function closeErr() {
+        setShowError(false);
+    }
+
     return (
         loading ?
             <div>
                 <Button variant="primary" onClick={handleClick}>Accéder au log</Button>{' '}
-                <Button variant="primary" onClick={queryList}>{showList ? "Afficher rapport" : "Afficher liste des requêtes"}</Button>{' '}
                 {showList ?
-                    <></>
+                    <>
+                        <Button variant="primary" onClick={queryList}>Afficher rapport</Button>{' '}
+                    </>
                     :
-                    <Button variant="info" onClick={handlePrint} className='printButton'>Imprimer</Button>
+                    showError ?
+                        <>
+                            <Button variant="info" onClick={handlePrint} className='printButton'>Imprimer</Button>{' '}
+                            <Button variant="primary" onClick={closeErr}>Fermer rapport erreur</Button>{' '}
+                        </>
+                        :
+                        <>
+                            <Button variant="primary" onClick={queryList}>Afficher liste des requêtes</Button>{' '}
+                            <Button variant="primary" onClick={handleShow}>Générer rapport erreur</Button>{' '}
+                            <Button variant="info" onClick={handlePrint} className='printButton'>Imprimer</Button>
+                        </>
+
                 }
                 <div className='logDisplay'>
                     <label><b>Analyse <i>{params.file}</i></b></label>
-                    {showList ?
-                        <QueryList occurencecount={occurences} analyse={analyse} date={date} uniques={uniques}/>
+                    {showError ?
+                        <ErrorReport filename={params.file} paramTemps={paramTemps} paramOccurrences={paramOccurrences} occurrences={occurrences} analyse={analyse} date={date} tempIndex={tempIndex} requetes={requetes} dateIndex={dateIndex} ref={componentRef} />
                         :
-                        <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurence={maxOccurence} plus1={plus1} plus2={plus2}
-                            requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
+                        showList ?
+                            <QueryList occurrencecount={occurrences} analyse={analyse} date={date} uniques={uniques} />
+                            :
+                            <ReportDisplay filename={params.file} nbRequetes={requetes.length} uniques={uniques.length} requeteMax={requeteMax} maxOccurrence={maxOccurrence} plus1={plus1} plus2={plus2}
+                                requeteLongue={requeteLongue} queryTime={queryTime} tempsTotal={tempsTotal} ref={componentRef} />
                     }
+
                 </div>
+                <Modal size="lg" show={showParamsErr} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Paramètres génération rapport d'erreur</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group className="mb-3" controlId="formTempsExec">
+                                <Form.Label><b>Temps d'exécution supérieur à (en s)</b></Form.Label>
+                                <Form.Control type="number" placeholder="60" onChange={handleChangeTemps} />
+                                <Form.Text className="text-muted">
+                                    Le seuil à partir duquel le temps d'exécution est considéré comme une erreur (laisser vide pour ne pas utiliser)
+                                </Form.Text>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formNbOcc">
+                                <Form.Label><b>Nombre d'occurences supérieur à</b></Form.Label>
+                                <Form.Control type="number" placeholder="100" onChange={handleChangeOcc} />
+                                <Form.Text className="text-muted">
+                                    Le seuil à partir duquel le nombre d'occurences est considéré comme une erreur (laisser vide pour ne pas utiliser)
+                                </Form.Text>
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success" onClick={handleSubmit}>
+                            Confirmer
+                        </Button>
+                        <Button variant="danger" onClick={handleClose}>
+                            Annuler
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
             :
             <Loading />

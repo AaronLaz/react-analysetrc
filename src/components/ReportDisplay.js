@@ -26,17 +26,15 @@ export default class ReportDisplay extends React.Component {
           <div>Nombre de requêtes détéctées: {this.props.nbRequetes}</div>
           <div>Nombre de requêtes uniques: {this.props.uniques}</div>
           <div>Requête la plus répétée: <div className="requetes">{this.props.requeteMax}</div></div>
-          <div>Nombre répétitions: {this.props.maxOccurence}</div>
+          <div>Nombre répétitions: {this.props.maxOccurrence}</div>
           <div>Nombre de requêtes {'>'}1s: {this.props.plus1}</div>
           <div>Nombre de requêtes {'>'}2s: {this.props.plus2}</div>
           <div>Requête qui a pris le plus de temps:<div className="requetes">{this.props.requeteLongue}</div></div>
           <div>Temps pris: {this.props.queryTime} secondes</div>
-          <div>{this.props.tempsTotal} entre l'exécution de la 1ère et la {this.props.nbRequetes} ème requête</div>
+          <div>Temps total: {this.props.tempsTotal}</div>
         </div>
         :
         <Loading />
     )
   }
-
 }
-

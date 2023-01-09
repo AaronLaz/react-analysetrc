@@ -8,13 +8,13 @@ import { difference, timeConverter } from './Report';
 function QueryList(props) {
 
     const [loading, setLoading] = useState(false);
-    const [listeRequetes, setListeRequetes] = useState(props.occurencecount.slice().sort((a, b) => a.value - b.value));
+    const [listeRequetes, setListeRequetes] = useState(props.occurrencecount.slice().sort((a, b) => a.value - b.value));
     const [show, setShow] = useState(false);
     const [detailRequete, setDetailRequete] = useState([0, 0, 0, 0]);
     const [requete, setRequete] = useState("");
     const [date, setDate] = useState([]);
     const [temps, setTemps] = useState();
-    const [option, setOption] = useState('occurence_asc');
+    const [option, setOption] = useState('occurrence_asc');
 
     // Fermeture modal
     const handleClose = () => setShow(false);
@@ -211,14 +211,14 @@ function QueryList(props) {
 
     function handleChange(event) {
         setOption(event.target.value);
-        let liste = props.occurencecount;
+        let liste = props.occurrencecount;
         let temp;
         let tree = new BinarySearchTree();
         switch (event.target.value) {
-            case "occurence_asc":
+            case "occurrence_asc":
                 temp = liste.slice().sort((a, b) => a.value - b.value);
                 break;
-            case "occurence_desc":
+            case "occurrence_desc":
                 temp = liste.slice().sort((a, b) => b.value - a.value);
                 break;
             case "params_desc":
@@ -254,8 +254,8 @@ function QueryList(props) {
                 <Form.Group className="mb-3">
                     <Form.Label>Options de tri <i>* pointer sur les options dans la sélection pour en savoir plus</i></Form.Label>
                     <Form.Select value={option} onChange={handleChange} className="sort_options">
-                        <option value="occurence_asc" title="Tri par nombre d'occurences en ordre ascendant">Occurences asc</option>
-                        <option value="occurence_desc" title="Tri par nombre d'occurences en ordre descendant">Occurences desc</option>
+                        <option value="occurrence_asc" title="Tri par nombre d'occurrences en ordre ascendant">Occurrences asc</option>
+                        <option value="occurrence_desc" title="Tri par nombre d'occurrences en ordre descendant">Occurrences desc</option>
                         <option value="params_asc" title="Tri par nombre de paramètres en ordre ascendant">Params asc</option>
                         <option value="params_desc" title="Tri par nombre de paramètres en ordre descendant">Params desc</option>
                         <option value="long_asc" title="Tri par longueur après tri par paramètres en ordre ascendant">Longueur asc</option>
@@ -267,7 +267,7 @@ function QueryList(props) {
                         <tr>
                             <th>N°</th>
                             <th>Requête</th>
-                            <th>Occurences</th>
+                            <th>Occurrences</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -313,7 +313,7 @@ function QueryList(props) {
                         </Card>
 
                         <Card>
-                            <Card.Body><div className="cardDisplay">{date.length} occurences en {temps}</div></Card.Body>
+                            <Card.Body><div className="cardDisplay">{date.length} occurrences en {temps}</div></Card.Body>
                         </Card>
                     </Modal.Body>
                     <Modal.Footer>
