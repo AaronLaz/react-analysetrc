@@ -36,12 +36,22 @@ function DisplayView() {
     function handleClick() {
         history.push(`/report/${params.file}`);
     }
+    function downloadLog() {
+        const fileData = JSON.parse(JSON.stringify(log));
+        const blob = new Blob([fileData], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = params.file;
+        link.href = url;
+        link.click();
+    }
 
 
     return (
         loading ?
             <div>
                 <Button variant="primary" onClick={handleClick}>Accéder au rapport</Button>{' '}
+                <Button variant="primary" onClick={downloadLog}>Télécharger log</Button>{' '}
                 <div className="logDisplay">
                     <div>
                         <label><b>{params.file}</b></label>
