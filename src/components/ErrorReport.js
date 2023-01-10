@@ -3,7 +3,7 @@ import React from "react";
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from './Loading';
 import { Button, Modal, Table, Card } from 'react-bootstrap';
-import { difference, timeConverter } from './Report';
+import { timeConverter } from './Report';
 
 export default class ErrorReport extends React.Component {
 
@@ -19,14 +19,15 @@ export default class ErrorReport extends React.Component {
             detailRequete: [0, 0, 0, 0],
             requete: "",
             date: [],
-            temps: "",
         }
         this.handleTemps = this.handleTemps.bind(this);
         this.handleOccurrences = this.handleOccurrences.bind(this);
+        this.handleShow = this.handleShow.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
     handleTemps() {
-        if (this.props.paramTemps !== 0) {
+        if (parseInt(this.props.paramTemps) !== 0) {
             let requetes = this.props.requetes.slice();
             let tempIndex = this.props.tempIndex.slice();
             let dateIndex = this.props.dateIndex.slice();
@@ -48,7 +49,7 @@ export default class ErrorReport extends React.Component {
     }
 
     handleOccurrences() {
-        if (this.props.paramOccurrences !== 0) {
+        if (parseInt(this.props.paramOccurrences) !== 0) {
             let occurrences = this.props.occurrences.slice();
             let res = [];
             occurrences.forEach((currentElement) => {
@@ -79,9 +80,8 @@ export default class ErrorReport extends React.Component {
         // Récupération valeurs date et temps d'exécution de la requête
         const date_requete = this.props.date[query];
         this.setState({ date: date_requete });
-        this.setState({ temps: timeConverter(difference(date_requete[0], date_requete[date_requete.length - 1])) });
         // Affichage modal
-        this.setState({ show: false });
+        this.setState({ show: true });
     };
 
     componentDidMount = () => {
@@ -186,9 +186,8 @@ export default class ErrorReport extends React.Component {
                                     </Table>
                                 </Card.Body>
                             </Card>
-
                             <Card>
-                                <Card.Body><div className="cardDisplay">{this.state.date.length} occurrences en {this.state.temps}</div></Card.Body>
+                                <Card.Body><div className="cardDisplay">{this.state.date.length} occurrences en {timeConverter(this.state.detailRequete[3] * 1000.0)}</div></Card.Body>
                             </Card>
                         </Modal.Body>
                         <Modal.Footer>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import 'react-toastify/dist/ReactToastify.css';
 import { Button, Modal, Table, Card, Form } from 'react-bootstrap';
 import Loading from './Loading';
-import { difference, timeConverter } from './Report';
+import { timeConverter } from './Report';
 
 function QueryList(props) {
 
@@ -13,7 +13,6 @@ function QueryList(props) {
     const [detailRequete, setDetailRequete] = useState([0, 0, 0, 0]);
     const [requete, setRequete] = useState("");
     const [date, setDate] = useState([]);
-    const [temps, setTemps] = useState();
     const [option, setOption] = useState('occurrence_asc');
 
     // Fermeture modal
@@ -28,7 +27,6 @@ function QueryList(props) {
         // Récupération valeurs date et temps d'exécution de la requête
         const date_requete = props.date[query];
         setDate(date_requete);
-        setTemps(timeConverter(difference(date_requete[0], date_requete[date_requete.length - 1])));
         // Affichage modal
         setShow(true);
     };
@@ -311,9 +309,8 @@ function QueryList(props) {
                                 </Table>
                             </Card.Body>
                         </Card>
-
                         <Card>
-                            <Card.Body><div className="cardDisplay">{date.length} occurrences en {temps}</div></Card.Body>
+                            <Card.Body><div className="cardDisplay">{date.length} occurrence(s) en {timeConverter(detailRequete[3] * 1000.0)}</div></Card.Body>
                         </Card>
                     </Modal.Body>
                     <Modal.Footer>

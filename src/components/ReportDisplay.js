@@ -31,7 +31,7 @@ export default class ReportDisplay extends React.Component {
           <div>Nombre de requêtes {'>'}2s: {this.props.plus2}</div>
           <div>Requête qui a pris le plus de temps:<div className="requetes">{this.props.requeteLongue}</div></div>
           <div>Temps pris: {this.props.queryTime} secondes</div>
-          <div>Temps total: {this.props.tempsTotal}</div>
+          <div>Temps total du log: {this.props.tempsTotal}</div>
         </div>
         :
         <Loading />

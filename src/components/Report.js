@@ -61,13 +61,14 @@ function Report() {
                 var tempCalculs = [];
                 var tempDates = [];
                 var tempDates_by_query = [];
+                var last_end = 0;
 
                 // Extraction des requêtes en enlevant les éléments non nécessaires
                 for (var i = 0; i < format.length; i++) {
                     content[i] = explodeBasic(format[i], ";");
                     content[i][2] = explode(content[i][2], "#", content[i][2], false);
                     // Extraction du temps et la date d'exécution de la requête
-                    var query_time = extractQueryTime(content[i][2][2]);
+                    let query_time = extractQueryTime(content[i][2][2]);
                     var query_date = extractDate(content[i][2][0]);
                     // Pour le compte des requêtes de plus de 1 et 2 secondes
                     if (query_time > 1) {
@@ -86,7 +87,11 @@ function Report() {
                     tempTemporelleIndex.push({ key: i, value: query_time });
                     // Ajout date
                     tempDates.push({ key: i, value: ({ query_ext, query_date }) });
-
+                    // calcul de la fin de la dernière requête
+                    let test_end = query_date.getTime() + query_time * 1000.0;
+                    if (test_end > last_end) {
+                        last_end = test_end;
+                    }
                 }
                 // Requêtes Uniques
                 for (let l = 0; l < tempRequetes.length; l++) {
@@ -143,9 +148,8 @@ function Report() {
                 setTempIndex(tempTemporelleIndex);
                 setQueryTime(tempTemporelleIndex[0].value);
                 setRequeteLongue(tempRequetes[tempTemporelleIndex[0].key]);
-                const first_query = tempDates.find(obj => obj.key === 0); // 1ère requete
-                const last_query = tempDates.find(obj => obj.key === tempDates.length - 1); // dernière requete
-                setTempsTotal(timeConverter(difference(first_query.value.query_date, last_query.value.query_date)));
+                const first_query = tempDates.find(obj => obj.key === 0); // date d'exécution de la 1ère requete
+                setTempsTotal(timeConverter(difference(first_query.value.query_date, new Date(last_end))));
                 setAnalyse(tempCalculs);
                 setDate(tempDates_by_query); // date d'exécution pour chaque requête
                 setDateIndex(tempDates);
@@ -180,12 +184,20 @@ function Report() {
 
     // Modifier paramètre génération rapport erreur du nombre d'occurences
     function handleChangeOcc(event) {
-        setParamOccurrences(event.target.value);
+        if (event.target.value !== "") {
+            setParamOccurrences(event.target.value);
+        } else {
+            setParamOccurrences(0);
+        }
     }
 
     // Modifier paramètre génération rapport erreur du nombre d'occurences
     function handleChangeTemps(event) {
-        setParamTemps(event.target.value);
+        if (event.target.value !== "") {
+            setParamTemps(event.target.value);
+        } else {
+            setParamTemps(0);
+        }
     }
 
     // Afficher paramètres de génération de rapport d'erreur
@@ -351,29 +363,31 @@ export function difference(date1, date2) {
 }
 
 // Convertir le temps(ms) en jours, heures, minutes et secondes
-export function timeConverter(timeDifference) {
+export function timeConverter(time) {
     var affichage = "";
     // Calculer le nombre de jours entre les deux dates
-    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const days = Math.floor(time / (1000.0 * 60.0 * 60.0 * 24.0));
     if (days !== 0) {
         affichage = `${days} jour(s) ` + affichage;
     }
 
     // Calculer le nombre de heures entre les deux dates
-    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const hours = Math.floor((time % (1000.0 * 60.0 * 60.0 * 24.0)) / (1000.0 * 60.0 * 60.0));
     if (hours !== 0) {
         affichage += `${hours} heure(s) `;
     }
 
     // Calculer le nombre de minutes entre les deux dates
-    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const minutes = Math.floor((time % (1000.0 * 60.0 * 60.0)) / (1000.0 * 60.0));
     if (minutes !== 0) {
         affichage += `${minutes} minute(s) `;
     }
 
     // Calculer le nombre de secondes entre les deux dates
-    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-    affichage += `${seconds} seconde(s) `;
+    const seconds = time % (1000.0 * 60.0) / 1000.0;
+    if (seconds !== 0) {
+        affichage += `${seconds.toFixed(2)} seconde(s) `;
+    }
 
     return affichage;
 }

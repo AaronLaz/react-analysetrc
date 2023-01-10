@@ -21,7 +21,6 @@ function Upload() {
     if (checkType(event) && checkFileSize(event)) {
       setSelectedFile(event.target.files[0]);
     }
-    setSelectedFile(event.target.files[0]);
   }
 
   // Déclenche l'upload du fichier
